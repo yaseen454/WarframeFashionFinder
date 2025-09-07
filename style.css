@@ -21,6 +21,10 @@
 }
 
 
+html {
+    /* Set base font size to 14px. Default is 16px. This makes all rem units smaller. */
+    font-size: 14px;
+}
 
 
 body {
@@ -722,6 +726,61 @@ body {
     background: repeating-conic-gradient(#374151 0% 25%, #4b5563 0% 50%) 50% / 8px 8px;
     opacity: 0.3;
     cursor: default;
+}
+
+/* Responsive adjustments for mobile and tablet */
+@media (max-width: 1023px) {
+    /* Make top nav bar smaller on mobile */
+    .app-nav-button {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
+
+    /* Fix overlapping sections on mobile by forcing them to stack */
+    .lg\:col-span-1, .lg\:col-span-2 {
+        display: block;
+        width: 100%;
+        grid-column: auto; /* Reset grid column span */
+        position: static !important; /* Override sticky/fixed positioning */
+        height: auto !important; /* Reset height */
+        max-height: none !important; /* Reset max-height */
+        overflow-y: visible !important; /* Allow content to scroll with the page */
+    }
+
+    /* Adjust warframe slot for better mobile view */
+    .warframe-slot {
+        grid-template-columns: 1fr; /* Stack elements */
+        gap: 0.25rem;
+    }
+
+    .warframe-slot-label {
+        text-align: left; /* Align label to the left */
+        font-size: 0.75rem;
+        color: #9ca3af;
+    }
+
+    /* Adjust main tabs for mobile */
+    .main-tab-button {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+    }
+
+    /* Adjust sub-tabs for mobile */
+    .tab-button {
+        padding: 0.5rem 0.5rem;
+        font-size: 0.8rem;
+    }
+
+    /* Allow sub-tab containers to wrap */
+    #harmony-tabs-nav, #stt-tabs-nav {
+        flex-wrap: wrap;
+    }
+
+    /* Adjust harmony color swatches for mobile */
+    .harmony-color-choice .color-swatch {
+        width: 3rem;
+        height: 3rem;
+    }
 }
 
 
