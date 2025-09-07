@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warframe Fashion Finder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="data/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="data/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+
+<body class="bg-gray-900 text-gray-200">
+
+    <nav class="bg-gray-800 shadow-lg sticky top-0 z-40">
+        <div class="container mx-auto px-4 md:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div id="app-nav-tabs" class="flex space-x-1 sm:space-x-4">
+                    <button class="app-nav-button active" data-page="page-home">Home</button>
+                    <button class="app-nav-button" data-page="page-help">Help</button>
+                </div>
+                <a href="https://github.com/yaseen454" class="text-gray-400 hover:text-white transition-colors"
+                    aria-label="GitHub Repository" target="_blank" rel="noopener noreferrer">
+                    <i class="fab fa-github text-2xl"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main id="page-home">
+        <div class="container mx-auto p-4 md:p-8">
+
+
+            <header class="text-center mb-8">
+                <h1 class="text-4xl md:text-5xl font-bold text-cyan-400">Warframe Fashion Finder</h1>
+                <p class="text-gray-400 mt-2">Create stunning color schemes for your Fashion Frame.</p>
+            </header>
+
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+
+                <div class="lg:col-span-1 bg-gray-800 p-6 rounded-lg shadow-lg self-start sticky top-8 overflow-y-auto"
+                    style="max-height: calc(100vh - 4rem);">
+                    <h2 class="text-2xl font-semibold mb-4 text-white">1. Select Base Color</h2>
+
+
+                    <div class="flex justify-center mb-4">
+                        <input type="color" id="color-picker"
+                            class="w-full h-32 md:h-48 rounded-lg cursor-pointer border-4 border-gray-700"
+                            value="#663399">
+                    </div>
+
+
+                    <div class="space-y-3">
+                        <div>
+                            <label for="hex-input" class="block text-sm font-medium text-gray-300">HEX</label>
+                            <div class="relative">
+                                <input type="text" id="hex-input"
+                                    class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 text-white focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500">
+                                <button id="copy-hex"
+                                    class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-400 hover:text-white">
+                                    <i class="far fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="rgb-input" class="block text-sm font-medium text-gray-300">RGB</label>
+                            <div class="relative">
+                                <input type="text" id="rgb-input"
+                                    class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 text-white focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500">
+                                <button id="copy-rgb"
+                                    class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-400 hover:text-white">
+                                    <i class="far fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="hsl-input" class="block text-sm font-medium text-gray-300">HSL</label>
+                            <div class="relative">
+                                <input type="text" id="hsl-input"
+                                    class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 text-white focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500">
+                                <button id="copy-hsl"
+                                    class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-400 hover:text-white">
+                                    <i class="far fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Centered Update Matches Button -->
+                    <div class="mt-6 flex justify-center">
+                        <button id="update-matches-btn"
+                            class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded-md transition-colors duration-200">
+                            Update Matches
+                        </button>
+                    </div>
+
+
+                    <div class="mt-8 pt-6 border-t border-gray-700">
+                        <div id="filter-palettes-header"
+                            class="flex justify-between items-center cursor-pointer -mx-2 px-2 py-1 rounded-md hover:bg-gray-700/50 transition-colors">
+                            <h3 class="text-xl font-semibold text-white">Filter Warframe Palettes</h3>
+                            <i id="filter-toggle-icon" class="fa fa-chevron-down transition-transform duration-300"></i>
+                        </div>
+                        <div id="filter-palettes-content"
+                            class="max-h-0 overflow-hidden transition-all duration-500 ease-in-out">
+                            <div class="pt-4 space-y-3">
+                                <div class="relative mb-2">
+                                    <input type="text" id="palette-search-input" placeholder="Search palettes..."
+                                        class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 pl-8 text-white focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500">
+                                    <i class="fa fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button id="select-all-palettes"
+                                        class="flex-1 bg-gray-700 hover:bg-gray-600 text-sm py-1 px-2 rounded-md transition-colors">Select
+                                        All</button>
+                                    <button id="deselect-all-palettes"
+                                        class="flex-1 bg-gray-700 hover:bg-gray-600 text-sm py-1 px-2 rounded-md transition-colors">Deselect
+                                        All</button>
+                                </div>
+                                <div id="palette-filter-grid" class="palette-filter-grid max-h-48 overflow-y-auto pr-2">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="mt-8 pt-6 border-t border-gray-700">
+                        <div id="base-palette-header"
+                            class="flex justify-between items-center cursor-pointer -mx-2 px-2 py-1 rounded-md hover:bg-gray-700/50 transition-colors">
+                            <h3 class="text-xl font-semibold text-white">Select Base Color From Palette</h3>
+                            <i id="palette-toggle-icon"
+                                class="fa fa-chevron-down transition-transform duration-300"></i>
+                        </div>
+                        <div id="base-palette-content"
+                            class="max-h-0 overflow-hidden transition-all duration-500 ease-in-out">
+                            <div class="space-y-4 pt-4">
+                                <select id="palette-selector"
+                                    class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 text-white focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500">
+                                </select>
+                                <div id="palette-color-grid" class="palette-color-grid-base">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="mt-8 pt-6 border-t border-gray-700">
+                        <h3 class="text-xl font-semibold mb-4 text-white">Warframe Colors</h3>
+                        <div id="warframe-slots-container" class="space-y-2">
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="lg:col-span-2">
+                    <h2 class="text-2xl font-semibold mb-4 text-white">2. Find Palette Matches</h2>
+
+
+                    <div id="main-tabs-nav" class="flex flex-wrap border-b border-gray-600 mb-[-1px]">
+                        <button class="main-tab-button active" data-target="main-tab-classic">Classic
+                            Combinations</button>
+                        <button class="main-tab-button" data-target="main-tab-stt">Shades, Tints, & Tones</button>
+                        <button class="main-tab-button" data-target="main-tab-generate">Generate Fashion</button>
+                    </div>
+
+
+                    <div id="main-tabs-content-wrapper">
+                        <div id="main-tab-classic" class="main-tab-content">
+                            <p class="text-gray-400 mb-4 p-4 bg-gray-800 rounded-b-lg rounded-tr-lg">
+                                Select a harmony type, then click a harmony color to find its closest match in-game.
+                                In the results, click a palette color to set it as your base color, or click the <i
+                                    class="fa-solid fa-square"></i> icon to add it to your Warframe.
+                            </p>
+                            <!-- Removed old Update Matches button -->
+                            <div id="palette-matcher-classic">
+                                <div id="harmony-tabs-nav" class="flex flex-wrap border-b border-gray-700">
+                                </div>
+                                <div id="harmony-tabs-content" class="bg-gray-800 p-4 rounded-b-lg">
+                                    <div id="classic-results-container"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="main-tab-stt" class="main-tab-content hidden">
+                            <p class="text-gray-400 mb-4 p-4 bg-gray-800 rounded-b-lg rounded-tr-lg">
+                                Select a variation type, then click a generated color to find its closest match in-game.
+                            </p>
+                            <div id="palette-matcher-stt">
+                                <div id="stt-tabs-nav" class="flex flex-wrap border-b border-gray-700">
+                                </div>
+                                <div id="stt-tabs-content" class="bg-gray-800 p-4 rounded-b-lg">
+                                    <div id="stt-results-container"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="main-tab-generate" class="main-tab-content hidden">
+                            <div class="bg-gray-800 p-4 rounded-b-lg rounded-tr-lg">
+                                <div class="flex items-center gap-2 mb-4">
+                                    <p class="text-gray-400">
+                                        Generate a random color palette for your Warframe. Choose a harmony type and the
+                                        number
+                                        of colors, then click Generate.
+                                        You can use the current base color or let the generator pick a random one.
+                                    </p>
+                                    <span
+                                        class="bg-yellow-700 text-yellow-200 text-xs font-semibold px-2 py-1 rounded-lg">
+                                        Test Demo
+                                    </span>
+                                </div>
+
+                                <div
+                                    class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 items-end gap-4 p-4 bg-gray-900 rounded-lg mb-4">
+                                    <div>
+                                        <label for="generate-style-selector"
+                                            class="block text-sm font-medium text-gray-300 mb-1">Style</label>
+                                        <select id="generate-style-selector"
+                                            class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 text-white focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500">
+                                            <option value="modern">Modern</option>
+                                            <option value="retro_vintage">Retro/Vintage</option>
+                                            <option value="cyberpunk_neon">Cyberpunk/Neon</option>
+                                            <option value="pastel_minimalist">Pastel/Minimalist</option>
+                                            <option value="nature_inspired">Nature Inspired</option>
+                                            <option value="monochrome_gradient">Monochrome Gradient</option>
+                                            <option value="vaporwave">Vaporwave</option>
+                                            <option value="metallic">Metallic</option>
+                                        </select>
+                                    </div>
+                                    <div id="generate-harmony-container">
+                                        <label for="generate-harmony-selector"
+                                            class="block text-sm font-medium text-gray-300 mb-1">Harmony</label>
+                                        <select id="generate-harmony-selector"
+                                            class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 text-white focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500">
+                                            <option value="random">Random</option>
+                                            <option value="analogous">Analogous</option>
+                                            <option value="split-complementary">Split-Complementary</option>
+                                            <option value="monochrome">Monochrome</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="generate-color-count"
+                                            class="block text-sm font-medium text-gray-300 mb-1">Colors</label>
+                                        <input type="number" id="generate-color-count" value="5" min="5" max="8"
+                                            class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 text-white focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500">
+                                    </div>
+                                    <div class="flex items-center h-[42px]">
+                                        <input type="checkbox" id="use-current-color-checkbox"
+                                            class="h-4 w-4 rounded border-gray-600 bg-gray-700 text-cyan-600 focus:ring-cyan-500">
+                                        <label for="use-current-color-checkbox"
+                                            class="ml-2 block text-sm text-gray-300 whitespace-nowrap">Use Base
+                                            Color</label>
+                                    </div>
+                                    <div>
+                                        <button id="generate-fashion-btn"
+                                            class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded-md transition-colors duration-200 flex items-center justify-center gap-2">
+                                            <i class="fas fa-random"></i> Generate
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div id="generate-output-container" class="mt-6">
+                                    <div class="placeholder">Your generated fashion palette will appear here.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <main id="page-help" class="hidden">
+        <div class="container mx-auto p-4 md:p-8">
+            <header class="text-center mb-8">
+                <h1 class="text-4xl md:text-5xl font-bold text-cyan-400">Help & Guide</h1>
+                <p class="text-gray-400 mt-2">How to use the Warframe Fashion Color Finder.</p>
+            </header>
+
+            <div class="max-w-4xl mx-auto space-y-8">
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                    <h2 class="text-2xl font-semibold mb-3 text-white border-b border-gray-700 pb-2">1. Selecting a Base
+                        Color</h2>
+                    <p class="text-gray-300 mb-4">This is the starting point for all color combinations. There are three
+                        ways to select your base color:</p>
+                    <ul class="list-disc list-inside space-y-2 text-gray-400">
+                        <li><strong>Color Picker:</strong> Click the large color rectangle to open your system's color
+                            picker for a visual selection.</li>
+                        <li><strong>Text Input:</strong> Enter a color's HEX, RGB, or HSL value directly into the
+                            corresponding input fields. The other fields and the picker will update automatically.</li>
+                        <li><strong>From a Palette:</strong> Use the "Select Base Color From Palette" section. Choose a
+                            palette from the dropdown, then click any color in the grid to set it as your base color.
+                            Note that this does not automatically update the matches; you must click "Update Matches"
+                            for that.</li>
+                    </ul>
+                </div>
+
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                    <h2 class="text-2xl font-semibold mb-3 text-white border-b border-gray-700 pb-2">2. Finding Palette
+                        Matches</h2>
+                    <p class="text-gray-300 mb-4">Once you have a base color, you can find matching in-game colors using
+                        three methods, accessible via the main tabs:</p>
+                    <div class="space-y-4">
+                        <h3 class="text-xl font-semibold text-cyan-400">Classic Combinations & Shades, Tints, & Tones
+                        </h3>
+                        <p class="text-gray-400">These tabs generate theoretical color harmonies based on your base
+                            color. Click on any of the generated swatches to find the closest colors available in the
+                            Warframe palettes you have selected.</p>
+                        <p class="text-gray-400">The results are displayed in cards, grouped by palette. You can then:
+                        </p>
+                        <ul class="list-disc list-inside space-y-2 text-gray-400">
+                            <li><strong>Click a matched color swatch</strong> to view its position in the full palette
+                                grid on the right.</li>
+                            <li><strong>Click the <i class="fa fa-plus"></i> icon</strong> on a swatch to add it
+                                directly to one of your Warframe color slots.</li>
+                            <li><strong>Click any color in the full palette grid</strong> to set it as your new base
+                                color (remember to click "Update Matches" if you want to apply it in the harmony
+                                sections!).</li>
+                        </ul>
+                    </div>
+                    <div class="space-y-4 mt-6">
+                        <h3 class="text-xl font-semibold text-cyan-400">Generate Fashion</h3>
+                        <p class="text-gray-400">This tab creates a full, themed color scheme. Configure the options
+                            (Style, Harmony, etc.) and click "Generate". You can then click any of the generated colors
+                            to find their closest in-game matches, just like in the other tabs. This feature is still considered work in progress and is not fully optimized to provide the best color pattern/combination.</p>
+                    </div>
+                </div>
+
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                    <h2 class="text-2xl font-semibold mb-3 text-white border-b border-gray-700 pb-2">3. Managing
+                        Palettes & Colors</h2>
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-semibold text-cyan-400">Filtering Palettes</h3>
+                        <p class="text-gray-400">In the "Filter Warframe Palettes" section, you can check or uncheck
+                            palettes to include or exclude them from search results. This is useful if you only own
+                            certain palettes.</p>
+                        <h3 class="text-lg font-semibold text-cyan-400">Warframe Color Slots</h3>
+                        <p class="text-gray-400">This section on the left represents your final color scheme. You can
+                            add colors to it using the <i class="fa fa-plus"></i> icon on any matched swatch. You can
+                            also click on a slot itself to open a modal and select a color directly from any available
+                            palette.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="message-box"
+        class="fixed bottom-5 right-5 bg-green-500 text-white py-2 px-4 rounded-lg shadow-lg opacity-0 transition-opacity duration-300">
+        Copied to clipboard!
+    </div>
+
+    <div id="info-popover"
+        class="fixed bg-gray-700 text-white p-2 rounded-lg shadow-xl text-sm z-50 hidden transition-opacity duration-200"
+        style="pointer-events: none;">
+    </div>
+
+    <div id="add-to-modal"
+        class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-sm">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold text-white">Add Color To...</h3>
+                <button id="modal-close-btn"
+                    class="text-gray-400 hover:text-white text-3xl leading-none">&times;</button>
+            </div>
+            <div class="flex items-center mb-4">
+                <div id="modal-color-preview" class="w-12 h-12 rounded-md border-2 border-gray-600 mr-4 flex-shrink-0">
+                </div>
+                <span id="modal-color-hex" class="font-mono text-lg text-gray-200">#000000</span>
+            </div>
+            <div id="modal-slots" class="grid grid-cols-2 gap-3">
+            </div>
+        </div>
+    </div>
+
+    <div id="select-for-slot-modal"
+        class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-2xl h-full max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center mb-4 flex-shrink-0">
+                <h3 id="select-for-slot-title" class="text-xl font-semibold text-white">Select Color for...</h3>
+                <button id="select-for-slot-close-btn"
+                    class="text-gray-400 hover:text-white text-3xl leading-none">&times;</button>
+            </div>
+            <div class="mb-4 flex-shrink-0 space-y-3">
+                <select id="select-for-slot-palette-selector"
+                    class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 text-white focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500">
+                </select>
+            </div>
+            <div id="select-for-slot-grid-container" class="flex-grow overflow-y-auto pr-2">
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+</body>
+
+</html>
