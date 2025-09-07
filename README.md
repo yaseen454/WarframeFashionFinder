@@ -1,12 +1,12 @@
 # Warframe Fashion Finder
 
-A web-based tool designed to help Warframe players create stunning and harmonious color schemes for their in-game characters, known as "Fashion Frame". This application provides a suite of tools to select, match, and generate color palettes, making it easier than ever to find the perfect look.
+A web-based tool designed to help Warframe players create stunning and harmonious color schemes for their Warframes. This application provides a suite of tools to select, match, and generate color palettes, making it easier than ever to find the perfect look.
 
 **Live Demo:** [https://wffinder.netlify.app/](https://wffinder.netlify.app/)
 
 ## About The Project
 
-This project was born out of a passion for both web development and the popular online game, Warframe. The goal was to create a powerful yet easy-to-use tool that simplifies the process of color customization in the game. By leveraging advanced color theory and the comprehensive CIEDE2000 color difference algorithm, the Fashion Finder provides accurate and aesthetically pleasing color suggestions.
+This project's goal was to create a powerful yet easy-to-use tool that simplifies the process of color customization in the game. By leveraging advanced color theory and the comprehensive CIEDE2000 color difference algorithm, the Fashion Finder provides accurate and aesthetically pleasing color suggestions.
 
 ## Features
 
