@@ -15,7 +15,7 @@ This project's goal was to create a powerful yet easy-to-use tool that simplifie
 - **Color Harmonies**: Generate classic color harmonies such as Complementary, Monochromatic, Analogous, Triadic, and Tetradic.
 - **Shades, Tints, & Tones**: Explore variations of your base color by generating shades, tints, and tones.
 - **Fashion Generation**: Get inspired with the "Generate Fashion" feature, which creates unique color palettes based on styles like Modern, Retro, Cyberpunk, and more.
-- **Warframe Slots**: Assign your chosen colors to specific Warframe slots (Primary, Secondary, Tertiary, Accents, etc.) to visualize your final look.
+- **Warframe Color Slots**: Assign your chosen colors to specific Warframe color slots (Primary, Secondary, Tertiary, Accents, etc.) to visualize your final look.
 - **Palette Filtering**: Filter the available in-game palettes to narrow down your search and focus on the palettes you own.
 - **Interactive UI**: A sleek and responsive user interface that makes exploring and selecting colors a breeze.
 
