@@ -1421,6 +1421,18 @@ function initializeApp() {
     updateWarframeSlotsUI();
     updateGeneratorControls();
 
+    paletteColorGrid.addEventListener('click', (event) => {
+        const cell = event.target.closest('.palette-cell');
+        if (!cell || !cell.dataset.hex) return;
+
+        if (event.target.closest('.add-to-warframe-btn')) {
+            showAddToMenu(cell.dataset.hex);
+            return;
+        }
+        
+        updateColor(cell.dataset.hex, { regenerate: false, showNotif: true });
+    });
+     
     selectForSlotGridContainer.addEventListener('click', (event) => {
         const cell = event.target.closest('.palette-cell');
         if (cell && cell.dataset.hex && currentlyEditingSlot) {
