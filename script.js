@@ -1083,7 +1083,26 @@ function handleGenerateFashion() {
             baseHsl = { h: Math.random() * 360, s: randomInRange(40, 100), l: randomInRange(30, 70) };
         }
     } else {
-        baseHsl = { h: Math.random() * 360, s: randomInRange(40, 100), l: randomInRange(30, 70) };
+        // Use a random base color, but tailor its properties slightly to the selected style
+        const randomHue = Math.random() * 360;
+        const highSat = randomInRange(70, 100);
+        const midSat = randomInRange(40, 70);
+        const lowSat = randomInRange(10, 40);
+        const highLight = randomInRange(70, 90);
+        const midLight = randomInRange(30, 70);
+        const lowLight = randomInRange(15, 30);
+
+        const styleDefaults = {
+            cyberpunk_neon: { h: randomHue, s: highSat, l: midLight },
+            pastel_minimalist: { h: randomHue, s: lowSat, l: highLight },
+            void_shadow: { h: randomHue, s: midSat, l: lowLight },
+            orokin_opulence: { h: randomInRange(45, 60), s: highSat, l: highLight },
+            infested_growth: { h: randomInRange(280, 340), s: midSat, l: midLight },
+            grineer_grit: { h: randomInRange(20, 40), s: lowSat, l: lowLight },
+            corpus_prime: { h: randomInRange(180, 240), s: midSat, l: midLight },
+            default: { h: randomHue, s: midSat, l: midLight }
+        };
+        baseHsl = styleDefaults[style] || styleDefaults.default;
     }
 
     let palette;
@@ -1109,6 +1128,21 @@ function handleGenerateFashion() {
         case 'metallic':
             palette = _generateMetallic(count);
             break;
+        case 'void_shadow':
+            palette = _generateVoidAndShadow(baseHsl, count);
+            break;
+        case 'orokin_opulence':
+            palette = _generateOrokinOpulence(baseHsl, count);
+            break;
+        case 'infested_growth':
+            palette = _generateInfestedGrowth(baseHsl, count);
+            break;
+        case 'grineer_grit':
+            palette = _generateGrineerGrit(baseHsl, count);
+            break;
+        case 'corpus_prime':
+            palette = _generateCorpusPrime(baseHsl, count);
+            break;
         case 'modern':
         default:
             palette = _generateModern(baseHsl, count);
@@ -1129,32 +1163,34 @@ function _generateModern(baseHsl, count) {
     const h1 = baseHsl.h;
     let h2;
     const harmonies = ['analogous', 'split-complementary', 'monochrome', 'triadic'];
-    if (harmony === 'random') {
-        const randHarmony = harmonies[Math.floor(Math.random() * harmonies.length)];
-        if (randHarmony === 'analogous') h2 = (h1 + randomInRange(15, 45)) % 360;
-        else if (randHarmony === 'split-complementary') h2 = (h1 + 180 + randomInRange(-30, 30)) % 360;
-        else if (randHarmony === 'triadic') h2 = (h1 + randomInRange(120, 240)) % 360;
-        else h2 = h1;
-    } else if (harmony === 'analogous') {
-        h2 = (h1 + randomInRange(15, 45)) % 360;
-    } else if (harmony === 'split-complementary') {
-        h2 = (h1 + 180 + randomInRange(-30, 30)) % 360;
-    } else if (harmony === 'monochrome') {
-        h2 = h1;
-    } else {
-        h2 = (h1 + randomInRange(120, 240)) % 360;
+    const selectedHarmony = harmony === 'random' ? harmonies[Math.floor(Math.random() * harmonies.length)] : harmony;
+
+    switch (selectedHarmony) {
+        case 'analogous':
+            h2 = (h1 + randomInRange(20, 45)) % 360;
+            break;
+        case 'split-complementary':
+            h2 = (h1 + 180 + randomInRange(-35, 35)) % 360;
+            break;
+        case 'triadic':
+            h2 = (h1 + (Math.random() > 0.5 ? 120 : 240) + randomInRange(-20, 20)) % 360;
+            break;
+        case 'monochrome':
+        default:
+            h2 = h1;
+            break;
     }
 
     const colors = [];
     for (let i = 0; i < count; i++) {
         const t = i / (count - 1);
-        const hue = h1 * (1 - t) + h2 * t;
-        const s = 50 + 30 * Math.cos(t * Math.PI) + randomInRange(-10, 10);
-        const l = 30 + 50 * t + randomInRange(-5, 5);
+        const hue = (h1 * (1 - t) + h2 * t + randomInRange(-8, 8)) % 360;
+        const s = 60 + 35 * Math.cos(t * Math.PI * 2) + randomInRange(-15, 15);
+        const l = 50 + 40 * Math.sin(t * Math.PI) + randomInRange(-10, 10);
         colors.push({
-            h: (hue + randomInRange(-10, 10)) % 360,
-            s: Math.max(20, Math.min(100, s)),
-            l: Math.max(20, Math.min(90, l))
+            h: hue < 0 ? hue + 360 : hue,
+            s: Math.max(15, Math.min(100, s)),
+            l: Math.max(10, Math.min(95, l))
         });
     }
     return shuffleArray(colors).map(c => hslToHex(c.h, c.s, c.l));
@@ -1163,34 +1199,39 @@ function _generateModern(baseHsl, count) {
 function _generateRetroVintage(baseHsl, count) {
     const baseHue = baseHsl.h;
     const colors = [];
-    const hueVariation = randomInRange(15, 30);
-    const saturationNoise = randomInRange(-10, 10);
+    const hueSpread = randomInRange(20, 40);
     for (let i = 0; i < count; i++) {
-        const h = (baseHue + i * hueVariation + randomInRange(-10, 10)) % 360;
-        const s = randomInRange(30, 60) + saturationNoise;
-        const l = randomInRange(35, 65) * (1 - 0.1 * Math.sin(i * Math.PI / count));
+        const h = (baseHue + (i * hueSpread * (Math.random() > 0.5 ? 1 : -1)) + randomInRange(-10, 10)) % 360;
+        const s = randomInRange(30, 65);
+        const l = randomInRange(40, 75);
         colors.push({
-            h,
-            s: Math.max(20, Math.min(80, s)),
-            l: Math.max(20, Math.min(70, l))
+            h: h < 0 ? h + 360 : h,
+            s: Math.max(25, Math.min(70, s)),
+            l: Math.max(25, Math.min(80, l))
         });
     }
-    return shuffleArray(colors).map(c => hslToHex(c.h, c.s, c.l));
+    // Add a dark and a light neutral color for balance
+    colors.push({ h: baseHue, s: randomInRange(5, 15), l: randomInRange(15, 30) });
+    colors.push({ h: baseHue, s: randomInRange(5, 15), l: randomInRange(80, 95) });
+
+    return shuffleArray(colors).slice(0, count).map(c => hslToHex(c.h, c.s, c.l));
 }
 
 function _generateCyberpunkNeon(baseHsl, count) {
     const baseHue = baseHsl.h;
     const colors = [
-        { h: baseHue, s: randomInRange(90, 100), l: randomInRange(50, 65) },
-        { h: (baseHue + randomInRange(150, 210)) % 360, s: randomInRange(90, 100), l: randomInRange(50, 65) }
+        { h: baseHue, s: randomInRange(90, 100), l: randomInRange(50, 60) }, // Bright base
+        { h: (baseHue + randomInRange(160, 200)) % 360, s: randomInRange(90, 100), l: randomInRange(50, 65) } // Bright complement
     ];
+    // Add a very dark, slightly colored base
+    colors.push({ h: (baseHue + randomInRange(-20, 20)) % 360, s: randomInRange(30, 80), l: randomInRange(5, 15) });
+
     while (colors.length < count) {
-        const prevHue = colors[colors.length - 1].h;
-        const h = (prevHue + randomInRange(30, 60)) % 360;
+        const h = (baseHue + randomInRange(20, 340)) % 360; // Pick from a wide range for variety
         colors.push({
             h,
             s: randomInRange(85, 100),
-            l: randomInRange(45, 70)
+            l: randomInRange(50, 75)
         });
     }
     return shuffleArray(colors).slice(0, count).map(c => hslToHex(c.h, c.s, c.l));
@@ -1199,18 +1240,22 @@ function _generateCyberpunkNeon(baseHsl, count) {
 function _generatePastelMinimalist(baseHsl, count) {
     const baseHue = baseHsl.h;
     const colors = [];
-    const hueStep = randomInRange(20, 40);
+    const hueStep = randomInRange(15, 45);
     for (let i = 0; i < count; i++) {
-        const h = (baseHue + i * hueStep + randomInRange(-15, 15)) % 360;
-        const s = randomInRange(20, 50);
-        const l = randomInRange(75, 95) + 5 * Math.cos(i * Math.PI / count);
+        const h = (baseHue + i * hueStep + randomInRange(-10, 10)) % 360;
+        const s = randomInRange(25, 55);
+        const l = randomInRange(80, 95);
         colors.push({
-            h,
-            s: Math.max(15, Math.min(60, s)),
-            l: Math.max(70, Math.min(95, l))
+            h: h < 0 ? h + 360 : h,
+            s: Math.max(20, Math.min(60, s)),
+            l: Math.max(75, Math.min(95, l))
         });
     }
-    return shuffleArray(colors).map(c => hslToHex(c.h, c.s, c.l));
+    // Add a contrasting darker, desaturated color
+    if (count > 3) {
+        colors.push({ h: baseHue, s: randomInRange(10, 20), l: randomInRange(30, 50) });
+    }
+    return shuffleArray(colors).slice(0, count).map(c => hslToHex(c.h, c.s, c.l));
 }
 
 function _generateNatureInspired(count) {
@@ -1224,13 +1269,13 @@ function _generateNatureInspired(count) {
     const randomMode = modes[modeKeys[Math.floor(Math.random() * modeKeys.length)]];
     const colors = [];
     for (let i = 0; i < count; i++) {
-        const h = randomInRange(randomMode.h[0], randomMode.h[1]) + randomInRange(-10, 10);
-        const s = randomInRange(randomMode.s[0], randomMode.s[1]) + randomInRange(-5, 5);
-        const l = randomInRange(randomMode.l[0], randomMode.l[1]) * (1 - 0.1 * Math.sin(i * Math.PI / count));
+        const h = randomInRange(randomMode.h[0], randomMode.h[1]) + randomInRange(-15, 15);
+        const s = randomInRange(randomMode.s[0], randomMode.s[1]) + randomInRange(-10, 10);
+        const l = randomInRange(randomMode.l[0], randomMode.l[1]);
         colors.push({
             h: (h + 360) % 360,
-            s: Math.max(20, Math.min(90, s)),
-            l: Math.max(20, Math.min(90, l))
+            s: Math.max(20, Math.min(95, s)),
+            l: Math.max(15, Math.min(95, l))
         });
     }
     return shuffleArray(colors).map(c => hslToHex(c.h, c.s, c.l));
@@ -1238,49 +1283,206 @@ function _generateNatureInspired(count) {
 
 function _generateMonochromeGradient(baseHsl, count) {
     const baseHue = baseHsl.h;
-    const sat = randomInRange(20, 60);
+    const sat = randomInRange(15, 85);
     const colors = [];
     for (let i = 0; i < count; i++) {
         const t = i / (count - 1);
-        const l = 15 + (75 * (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t));
+        // Use an easing function for a more dynamic gradient
+        const l = 10 + (85 * (1 - Math.pow(1 - t, 3)));
         colors.push({
-            h: (baseHue + randomInRange(-5, 5)) % 360,
-            s: Math.max(10, Math.min(70, sat + randomInRange(-10, 10))),
-            l: Math.max(10, Math.min(90, l))
+            h: (baseHue + randomInRange(-4, 4)) % 360,
+            s: Math.max(10, Math.min(90, sat + randomInRange(-10, 10))),
+            l: Math.max(10, Math.min(95, l))
         });
     }
     return colors.map(c => hslToHex(c.h, c.s, c.l));
 }
 
 function _generateVaporwave(count) {
-    const basePalette = ["#ff71ce", "#01cdfe", "#05ffa1", "#b967ff", "#fffb96", "#ff9f1c", "#f721ff", "#00c2cb"];
-    const colors = shuffleArray([...basePalette]);
+    const basePalette = ["#ff71ce", "#01cdfe", "#05ffa1", "#b967ff", "#fffb96"];
+    const darks = ["#2C003E", "#030640"];
+    let colors = shuffleArray([...basePalette]);
+    
+    // Ensure at least one dark color for contrast
+    colors.unshift(darks[Math.floor(Math.random() * darks.length)]);
+
     if (colors.length < count) {
-        const extraColors = [];
-        for (let i = 0; i < count - colors.length; i++) {
-            const baseColor = hexToRgb(colors[i % colors.length]);
+        const extras = count - colors.length;
+        for (let i = 0; i < extras; i++) {
+            const baseColor = hexToRgb(colors[i % basePalette.length]); // base off the brights
             const hsl = rgbToHsl(baseColor.r, baseColor.g, baseColor.b);
-            extraColors.push({
-                h: (hsl.h + randomInRange(-20, 20)) % 360,
-                s: Math.min(100, hsl.s + randomInRange(-10, 10)),
-                l: Math.min(95, hsl.l + randomInRange(-5, 5))
-            });
+            colors.push(hslToHex(
+                (hsl.h + randomInRange(-15, 15)) % 360,
+                Math.min(100, hsl.s + randomInRange(-10, 5)),
+                Math.min(90, hsl.l + randomInRange(-10, 10))
+            ));
         }
-        colors.push(...extraColors.map(c => hslToHex(c.h, c.s, c.l)));
     }
-    return colors.slice(0, count);
+    return shuffleArray(colors).slice(0, count);
 }
 
 function _generateMetallic(count) {
-    const basePalette = ["#D4AF37", "#C0C0C0", "#CD7F32", "#B87333", "#E5E4E2", "#71797E", "#a9a9a9", "#8b4513", "#ffd700"];
-    const colors = shuffleArray([...basePalette]);
+    const golds = ["#D4AF37", "#FFD700", "#CFB53B"];
+    const silvers = ["#C0C0C0", "#E5E4E2", "#A9A9A9"];
+    const coppers = ["#B87333", "#CD7F32", "#8B4513"];
+    const allMetals = [...golds, ...silvers, ...coppers];
+    
+    let colors = shuffleArray(allMetals);
+
     return colors.slice(0, count).map(hex => {
         const { h, s, l } = rgbToHsl(hexToRgb(hex).r, hexToRgb(hex).g, hexToRgb(hex).b);
-        const newS = Math.max(10, Math.min(50, s + randomInRange(-15, 5)));
-        const newL = Math.max(20, Math.min(80, l + randomInRange(-10, 10)));
+        // Reduce saturation and vary lightness to make them more 'in-game' friendly
+        const newS = Math.max(5, Math.min(40, s + randomInRange(-20, 5)));
+        const newL = Math.max(15, Math.min(85, l + randomInRange(-20, 20)));
         return hslToHex(h, newS, newL);
     });
 }
+
+// --- NEW GENERATOR FUNCTIONS ---
+
+function _generateVoidAndShadow(baseHsl, count) {
+    const colors = [];
+    const accentHue = baseHsl.h;
+
+    // Generate dark, desaturated base colors
+    for (let i = 0; i < count - 2; i++) {
+        colors.push({
+            h: (accentHue + randomInRange(-40, 40)) % 360,
+            s: randomInRange(5, 25),
+            l: randomInRange(10, 25)
+        });
+    }
+
+    // Add a brighter, more saturated accent color
+    colors.push({
+        h: accentHue,
+        s: randomInRange(80, 100),
+        l: randomInRange(50, 65)
+    });
+
+    // Add a secondary, less bright accent or a highlight
+    colors.push({
+        h: (accentHue + randomInRange(-15, 15)) % 360,
+        s: randomInRange(40, 70),
+        l: randomInRange(30, 50)
+    });
+
+    return shuffleArray(colors).slice(0, count).map(c => hslToHex(c.h, c.s, c.l));
+}
+
+function _generateOrokinOpulence(baseHsl, count) {
+    const accentHue = baseHsl.h; // Use baseHsl for the accent
+    const colors = [];
+
+    // Primary Orokin Colors: White, Cream, Gold
+    colors.push({ h: 45, s: randomInRange(15, 30), l: randomInRange(90, 98) }); // White/Cream
+    colors.push({ h: 50, s: randomInRange(60, 85), l: randomInRange(65, 80) }); // Gold
+    colors.push({ h: 48, s: randomInRange(20, 40), l: randomInRange(20, 35) }); // Darker Gold/Bronze
+
+    // Add the accent color
+    colors.push({
+        h: accentHue,
+        s: randomInRange(70, 90),
+        l: randomInRange(50, 60)
+    });
+
+    // Fill remaining slots with variations
+    while (colors.length < count) {
+        const choice = Math.random();
+        if (choice < 0.6) { // More gold/white variations
+            colors.push({ h: randomInRange(45, 55), s: randomInRange(30, 75), l: randomInRange(40, 90) });
+        } else { // More accent variations
+            colors.push({ h: accentHue, s: randomInRange(50, 80), l: randomInRange(30, 70) });
+        }
+    }
+
+    return shuffleArray(colors).slice(0, count).map(c => hslToHex(c.h, c.s, c.l));
+}
+
+function _generateInfestedGrowth(baseHsl, count) {
+    const baseHue = baseHsl.h; // Fleshy tones: purples, pinks
+    const colors = [];
+    const hueRange = [baseHue - 30, baseHue + 30];
+
+    for (let i = 0; i < count; i++) {
+        const h = randomInRange(hueRange[0], hueRange[1]);
+        const s = randomInRange(30, 65);
+        const l = randomInRange(20, 60);
+        colors.push({
+            h: (h + 360) % 360,
+            s: Math.max(25, Math.min(70, s)),
+            l: Math.max(15, Math.min(65, l))
+        });
+    }
+
+    // Add a sickly green/yellow accent
+    if (count > 3) {
+        colors.push({
+            h: randomInRange(70, 90),
+            s: randomInRange(40, 70),
+            l: randomInRange(40, 60)
+        });
+    }
+
+    return shuffleArray(colors).slice(0, count).map(c => hslToHex(c.h, c.s, c.l));
+}
+
+function _generateGrineerGrit(baseHsl, count) {
+    const colors = [];
+    const baseHue = baseHsl.h; // Rust/Brown tones
+
+    // Gritty base colors
+    for (let i = 0; i < count - 1; i++) {
+        colors.push({
+            h: (baseHue + randomInRange(-15, 15)) % 360,
+            s: randomInRange(10, 45),
+            l: randomInRange(15, 40)
+        });
+    }
+    // Add a muted olive/green
+    colors.push({ h: randomInRange(70, 90), s: randomInRange(20, 40), l: randomInRange(25, 45) });
+
+    // Add a single pop of color for lights/syandana
+    if (count > 2) {
+        colors.push({
+            h: randomInRange(30, 50), // Orange/Yellow
+            s: randomInRange(80, 100),
+            l: randomInRange(50, 60)
+        });
+    }
+
+    return shuffleArray(colors).slice(0, count).map(c => hslToHex(c.h, c.s, c.l));
+}
+
+function _generateCorpusPrime(baseHsl, count) {
+    const accentHue = baseHsl.h; // Blue/Cyan tones
+    const colors = [];
+
+    // Corpus base colors: Greys, Whites, Blacks
+    colors.push({ h: 200, s: randomInRange(5, 15), l: randomInRange(85, 95) }); // Off-White
+    colors.push({ h: 200, s: randomInRange(5, 10), l: randomInRange(40, 60) }); // Mid-Grey
+    colors.push({ h: 200, s: randomInRange(0, 10), l: randomInRange(10, 20) }); // Dark Grey/Black
+
+    // Add the primary accent
+    colors.push({
+        h: accentHue,
+        s: randomInRange(70, 90),
+        l: randomInRange(55, 70)
+    });
+
+    // Fill with variations
+    while (colors.length < count) {
+        const choice = Math.random();
+        if (choice < 0.5) { // More greys
+            colors.push({ h: 200, s: randomInRange(0, 15), l: randomInRange(10, 95) });
+        } else { // More accent variations
+            colors.push({ h: (accentHue + randomInRange(-10, 10)) % 360, s: randomInRange(50, 90), l: randomInRange(40, 80) });
+        }
+    }
+
+    return shuffleArray(colors).slice(0, count).map(c => hslToHex(c.h, c.s, c.l));
+}
+
 
 function renderGeneratedPalette(palette) {
     generateOutputContainer.innerHTML = '';
