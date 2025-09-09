@@ -33,6 +33,7 @@ const generateHarmonySelector = document.getElementById('generate-harmony-select
 const generateColorCount = document.getElementById('generate-color-count');
 const generateOutputContainer = document.getElementById('generate-output-container');
 const useCurrentColorCheckbox = document.getElementById('use-current-color-checkbox');
+const addMetallicAccentCheckbox = document.getElementById('add-metallic-accent-checkbox');
 
 // Quick Add Modal Elements
 const addToModal = document.getElementById('add-to-modal');
@@ -1070,6 +1071,7 @@ function updateGeneratorControls() {
 function handleGenerateFashion() {
     const style = generateStyleSelector.value;
     const count = parseInt(generateColorCount.value, 10);
+    const addMetallic = addMetallicAccentCheckbox.checked;
     let baseHsl;
 
     if (useCurrentColorCheckbox.checked) {
@@ -1106,50 +1108,58 @@ function handleGenerateFashion() {
     }
 
     let palette;
+    const colorCount = (addMetallic && count > 1) ? count - 1 : count;
+
     switch (style) {
         case 'retro_vintage':
-            palette = _generateRetroVintage(baseHsl, count);
+            palette = _generateRetroVintage(baseHsl, colorCount);
             break;
         case 'cyberpunk_neon':
-            palette = _generateCyberpunkNeon(baseHsl, count);
+            palette = _generateCyberpunkNeon(baseHsl, colorCount);
             break;
         case 'pastel_minimalist':
-            palette = _generatePastelMinimalist(baseHsl, count);
+            palette = _generatePastelMinimalist(baseHsl, colorCount);
             break;
         case 'nature_inspired':
-            palette = _generateNatureInspired(count);
+            palette = _generateNatureInspired(colorCount);
             break;
         case 'monochrome_gradient':
-            palette = _generateMonochromeGradient(baseHsl, count);
+            palette = _generateMonochromeGradient(baseHsl, colorCount);
             break;
         case 'vaporwave':
-            palette = _generateVaporwave(count);
+            palette = _generateVaporwave(colorCount);
             break;
         case 'metallic':
-            palette = _generateMetallic(count);
+            palette = _generateMetallic(colorCount);
             break;
         case 'void_shadow':
-            palette = _generateVoidAndShadow(baseHsl, count);
+            palette = _generateVoidAndShadow(baseHsl, colorCount);
             break;
         case 'orokin_opulence':
-            palette = _generateOrokinOpulence(baseHsl, count);
+            palette = _generateOrokinOpulence(baseHsl, colorCount);
             break;
         case 'infested_growth':
-            palette = _generateInfestedGrowth(baseHsl, count);
+            palette = _generateInfestedGrowth(baseHsl, colorCount);
             break;
         case 'grineer_grit':
-            palette = _generateGrineerGrit(baseHsl, count);
+            palette = _generateGrineerGrit(baseHsl, colorCount);
             break;
         case 'corpus_prime':
-            palette = _generateCorpusPrime(baseHsl, count);
+            palette = _generateCorpusPrime(baseHsl, colorCount);
             break;
         case 'modern':
         default:
-            palette = _generateModern(baseHsl, count);
+            palette = _generateModern(baseHsl, colorCount);
             break;
     }
 
-    renderGeneratedPalette(palette);
+    let paletteObjects = palette.map(hex => ({ hex, type: 'normal' }));
+
+    if (addMetallic && count > 1) {
+        paletteObjects.push({ hex: _generateSingleMetallicAccent(), type: 'metallic' });
+    }
+
+    renderGeneratedPalette(paletteObjects);
 }
 
 function hslToHex(h, s, l) {
@@ -1338,6 +1348,20 @@ function _generateMetallic(count) {
     });
 }
 
+function _generateSingleMetallicAccent() {
+    const golds = ["#D4AF37", "#FFD700", "#CFB53B"];
+    const silvers = ["#C0C0C0", "#E5E4E2", "#A9A9A9"];
+    const coppers = ["#B87333", "#CD7F32", "#8B4513"];
+    const allMetals = [...golds, ...silvers, ...coppers];
+    const hex = allMetals[Math.floor(Math.random() * allMetals.length)];
+
+    const { h, s, l } = rgbToHsl(hexToRgb(hex).r, hexToRgb(hex).g, hexToRgb(hex).b);
+    // Reduce saturation and vary lightness to make them more 'in-game' friendly
+    const newS = Math.max(5, Math.min(40, s + randomInRange(-20, 5)));
+    const newL = Math.max(15, Math.min(85, l + randomInRange(-20, 20)));
+    return hslToHex(h, newS, newL);
+}
+
 // --- NEW GENERATOR FUNCTIONS ---
 
 function _generateVoidAndShadow(baseHsl, count) {
@@ -1494,14 +1518,23 @@ function renderGeneratedPalette(palette) {
     resultsContainer.className = 'results-area mt-4';
     resultsContainer.innerHTML = `<div class="placeholder">Select a generated color above to find its closest in-game match.</div>`;
 
-    palette.forEach(hex => {
+    palette.forEach((colorData, index) => {
+        const hex = (typeof colorData === 'string') ? colorData : colorData.hex;
+        const isMetallic = (typeof colorData === 'object' && colorData.type === 'metallic');
+
         const rgb = hexToRgb(hex);
         const colorButton = document.createElement('button');
         colorButton.className = 'harmony-color-choice';
+        if (isMetallic) {
+            colorButton.classList.add('metallic-accent');
+        }
+
+        const labelHTML = isMetallic ? '<span class="accent-label">Accent</span>' : `<span class="font-mono">${hex}</span>`;
+
         colorButton.innerHTML = `
             <div class="color-swatch" style="background-color: ${hex};">
                  <div class="harmony-swatch-overlay">
-                    <span class="font-mono">${hex}</span>
+                    ${labelHTML}
                 </div>
             </div>`;
 

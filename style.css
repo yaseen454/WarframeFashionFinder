@@ -198,6 +198,21 @@ body {
     letter-spacing: 0.05em;
 }
 
+.accent-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #FFD700; /* Gold */
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.harmony-color-choice.metallic-accent .color-swatch {
+    border-color: #d7d478; /* Darker Gold */
+}
+
+.harmony-color-choice.metallic-accent:hover .color-swatch {
+    border-color: #FFD700; /* Brighter Gold on hover */
+}
 
 .palette-display-area {
     display: flex;
